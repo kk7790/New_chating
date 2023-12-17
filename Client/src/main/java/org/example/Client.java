@@ -9,6 +9,7 @@ public class Client extends Thread{
     DataInputStream in;
     DataOutputStream out;
     Scanner sc;
+    int count;
 
     public Client(){
         try{
@@ -16,10 +17,15 @@ public class Client extends Thread{
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
             sc = new Scanner(System.in);
-            while(true){
 
-                revMsg();
-                sendMsg();
+            while(true){
+                if(count == 0){
+                    sendMsg();
+                }
+                else {
+                    revMsg();
+                    sendMsg();
+                }
             }
             //위 두개 순서 바꾸면 block 발생..??
         } catch (IOException e){
@@ -36,7 +42,7 @@ public class Client extends Thread{
         }
     }
     public void revMsg(){
-//        new Thread(()->{
+        new Thread(()->{
             try{
                 while (true){
                     InputStream input = socket.getInputStream();
@@ -45,12 +51,17 @@ public class Client extends Thread{
                 }
             }catch (IOException e){
             }
-//        }).start();
+        }).start();
     }
     public void sendMsg(){
             try{
                 while(true){
-                    System.out.println("서버로 보낼 말 : ");
+                    if(count == 0){
+                        System.out.println("닉네임 : ");
+                    }
+                    else{
+                        System.out.println("서버로 보낼 말 : ");
+                    }
                     String msg = sc.nextLine();
                     out.writeUTF(msg);
                     if(msg.equals("close")){
